@@ -59,7 +59,9 @@ export default function Page() {
 
 			{!data?.characters?.results ? (
 				<ListSkeleton />
-			) : (
+			) : !!!data.characters.results.length ? (
+        <p>No search results. Enter different value</p>
+      ) : (
 				<>
 					<List {...{ items: data.characters.results }} />
 
