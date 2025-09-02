@@ -7,6 +7,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/chadcn/components/ui/pagination";
+import React from 'react';
 
 export default function PaginationComponent({
   setCurrentPage,
@@ -17,77 +18,77 @@ export default function PaginationComponent({
   totalPages: number;
   currentPage: number;
 }) {
-  const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
+  const visiblePages = new Set<number>();
+
+  // Always show first and last
+  visiblePages.add(1);
+  visiblePages.add(totalPages);
+
+  // Add current page ±2
+  for (let offset = -2; offset <= 2; offset++) {
+    const page = currentPage + offset;
+    if (page > 1 && page < totalPages) {
+      visiblePages.add(page);
+    }
+  }
+
+  // Turn into sorted array
+  const pages = Array.from(visiblePages).sort((a, b) => a - b);
 
   return (
     <Pagination>
       <PaginationContent>
-        {/* Previous button */}
+        {/* Previous */}
         <PaginationItem>
           <PaginationPrevious
+            size={0}
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-            size={1}
           />
         </PaginationItem>
 
-        {/* First page (only if not current) */}
-        {currentPage > 1 && (
-          <PaginationItem>
-            <PaginationLink onClick={() => setCurrentPage(1)} size={1}>
-              1
-            </PaginationLink>
-          </PaginationItem>
-        )}
+        {pages.map((page, idx) => {
+          const prevPage = pages[idx - 1];
 
-        {/* Ellipsis before current page */}
-        {currentPage > 3 && (
-          <PaginationItem>
-            <PaginationEllipsis />
-          </PaginationItem>
-        )}
+          // Insert ellipsis if there’s a gap > 1
+          if (prevPage && page - prevPage > 1) {
+            return (
+              <React.Fragment key={page}>
+                <PaginationItem>
+                  <PaginationEllipsis />
+                </PaginationItem>
+                <PaginationItem>
+                  <PaginationLink
+                    size={0}
+                    onClick={() => setCurrentPage(page)}
+                    className={page === currentPage ? "font-bold" : ""}
+                  >
+                    {page}
+                  </PaginationLink>
+                </PaginationItem>
+              </React.Fragment>
+            );
+          }
 
-        {/* Middle pages: current ±1, but skip first/last */}
-        {pages
-          .filter((p) => p !== 1 && p !== totalPages)
-          .filter(
-            (p) =>
-              p === currentPage ||
-              p === currentPage - 1 ||
-              p === currentPage + 1
-          )
-          .map((p) => (
-            <PaginationItem key={p}>
+          return (
+            <PaginationItem key={page}>
               <PaginationLink
-                onClick={() => setCurrentPage(p)}
-                className={p === currentPage ? "font-bold" : ""}
-                size={1}
+                size={0}
+                onClick={() => setCurrentPage(page)}
+                className={page === currentPage ? "font-bold" : ""}
               >
-                {p}
+                {page}
               </PaginationLink>
             </PaginationItem>
-          ))}
+          );
+        })}
 
-        {/* Ellipsis after current page */}
-        {currentPage < totalPages - 2 && (
-          <PaginationItem>
-            <PaginationEllipsis />
-          </PaginationItem>
-        )}
-
-        {/* Last page (only if not current) */}
-        {currentPage < totalPages && (
-          <PaginationItem>
-            <PaginationLink onClick={() => setCurrentPage(totalPages)} size={1}>
-              {totalPages}
-            </PaginationLink>
-          </PaginationItem>
-        )}
-
-        {/* Next button */}
+        {/* Next */}
         <PaginationItem>
           <PaginationNext
-            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-            size={1}
+            size={0}
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+            }
           />
         </PaginationItem>
       </PaginationContent>
