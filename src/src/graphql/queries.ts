@@ -40,3 +40,19 @@ export const getCharactersByName = `
     }
   }
 `
+export const getCharactersByCharacterName = `
+  query GetCharactersByCharacterName ($fullName: String!) {
+    characters(filter: { name: $fullName }) {
+      results {
+        name
+        status
+        image
+        location {
+          dimension
+          created
+          name
+        }
+      }
+    }
+  }
+`

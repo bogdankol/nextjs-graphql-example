@@ -3,36 +3,36 @@ import { gql, useQuery } from '@apollo/client'
 import {
 	getBasicListOfCharacters,
 	getCharactersByName,
+  getCharactersByCharacterName
 } from '@/graphql/queries'
 
 export function useGraphRequestByQueryString(props: {
-	id?: number | string
+	fullNameString?: string
 	debouncedValue?: string
 	pageNum?: number
 }) {
-	const { debouncedValue, id, pageNum } = props
-
-	let typeOfRequest: 'getAll' | 'getByName' | 'getbyId'
+	const { debouncedValue, fullNameString, pageNum } = props
+  let chosenQuery
+  let variables: {
+    name?: string
+  } = {}
 
 	if (debouncedValue) {
-		typeOfRequest = 'getByName'
-	} else if (id) {
-		typeOfRequest = 'getbyId'
+    chosenQuery = getCharactersByName
+    variables.name = debouncedValue
+	} else if (fullNameString) {
+    chosenQuery = getCharactersByCharacterName
+    variables.name = fullNameString
 	} else {
-		typeOfRequest = 'getAll'
+    chosenQuery = getBasicListOfCharacters
 	}
+  
 	const { loading, error, data } = useQuery(
-		gql(
-			typeOfRequest === 'getAll'
-				? getBasicListOfCharacters
-				: typeOfRequest === 'getByName'
-				? getCharactersByName
-				: '',
-		),
+		gql(chosenQuery),
 		{
 			variables: {
 				page: pageNum,
-				...(typeOfRequest === 'getByName' ? { name: debouncedValue } : { id }),
+				...variables
 			},
 		},
 	)
