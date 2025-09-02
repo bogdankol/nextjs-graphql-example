@@ -1,8 +1,5 @@
 import Logo from '@/components/Logo'
-import { doGraphRequest } from '@/utils/doGraphRequest'
 import Link from 'next/link'
-import { useClientContext } from '@/hooks/useClientContext'
-import { getBasicListOfCharacters } from '@/graphql/queries'
 
 export default async function Layout({
 	children,
@@ -32,10 +29,8 @@ export default async function Layout({
 		},
 	]
 
-  const items = await doGraphRequest(getBasicListOfCharacters)
-  console.log({items})
 	return (
-		<div className='flex flex-col'>
+		<div className='flex flex-col min-h-screen'>
 			<div className='flex items-center space-x-10 bg-rose-500 px-4'>
 				<Logo />
 
@@ -51,13 +46,12 @@ export default async function Layout({
 					))}
 				</nav>
 			</div>
-			<div className={`px-4 flex flex-col min-h-full space-y-4`}>
-				<div>{children}</div>
 
-				<footer className='flex h-[60px] w-full mt-auto items-center bg-amber-400'>
-					Footer
-				</footer>
-			</div>
+      <main className='flex flex-col flex-grow px-4'>{children}</main>
+
+      <footer className='flex h-[60px] w-full items-center bg-amber-400 px-4'>
+        Footer
+      </footer>
 		</div>
 	)
 }

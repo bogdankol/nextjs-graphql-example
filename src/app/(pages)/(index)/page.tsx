@@ -1,35 +1,77 @@
 'use client'
-import { Input } from '@/chadcn/components/ui/input';
-import { useEffect, useState } from 'react';
+import { Input } from '@/chadcn/components/ui/input'
+import { useEffect, useState } from 'react'
+import {
+	getBasicListOfCharacters,
+	getCharactersByName,
+} from '@/graphql/queries'
+import { useGraphRequestByQueryString } from '@/hooks/useGraphRequestByQueryString'
+import type { TItem, TResData } from '@/lib/types'
+import List from '@/components/List'
+import Pagination from '@/components/Pagination'
+import Skeleton from '@/components/Skeleton'
+import ListSkeleton from '@/components/ListSkeleton'
 
 let timer: NodeJS.Timeout
 
-export default function MainPage() {
-  const [inputValue, setInputValue] = useState('')
-  const [debouncedValue, setDebouncedValue] = useState('')
+export default function Page() {
+	const [inputValue, setInputValue] = useState('')
+	const [debouncedValue, setDebouncedValue] = useState('')
+	const [currentPage, setCurrentPage] = useState(1)
+
+	const { data }: TResData = useGraphRequestByQueryString({
+    debouncedValue,
+    pageNum: currentPage
+  })
+	const totalPages = data?.characters?.info?.pages
+
+	useGraphRequestByQueryString({
+    debouncedValue,
+    pageNum: currentPage + 1
+  })
+
+	useGraphRequestByQueryString({
+    debouncedValue,
+    pageNum: currentPage - 1
+  })
+
+	useEffect(() => {
+		if (timer) {
+			clearTimeout(timer)
+		}
+		timer = setTimeout(() => {
+			setDebouncedValue(inputValue)
+		}, 500)
+	}, [inputValue])
 
   useEffect(() => {
-    if(timer) {
-      clearTimeout(timer)
-    }
-    timer = setTimeout(() => setDebouncedValue(inputValue), 500)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [data])
 
-  }, [inputValue])
+	return (
+		<section className={`flex h-full w-full flex-col `}>
+			<Input
+				onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+					const value = e.target.value
+					setInputValue(value)
+				}}
+			/>
 
-  useEffect(() => {
-    doRequest()
-  }, [debouncedValue])
+			{!data?.characters?.results ? (
+				<ListSkeleton />
+			) : (
+				<>
+					<List {...{ items: data.characters.results }} />
 
-  const doRequest = async () => {
-    await fetch('')
-  }
-
-  return (
-    <section className={`flex h-full w-full flex-col `}>
-      <Input className='mt-5' onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value
-        setInputValue(value)
-      }}/>
-    </section>
-  )
+					<Pagination
+						{...{
+							setCurrentPage,
+							totalPages,
+							currentPage,
+						}}
+					/>
+				</>
+			)}
+		</section>
+	)
 }
