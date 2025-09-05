@@ -1,15 +1,10 @@
 'use client'
 import { Input } from '@/chadcn/components/ui/input'
 import { useEffect, useState } from 'react'
-import {
-	getBasicListOfCharacters,
-	getCharactersByName,
-} from '@/graphql/queries'
 import { useGraphRequestByQueryString } from '@/hooks/useGraphRequestByQueryString'
-import type { TItem, TResData } from '@/lib/types'
+import type { TRespData } from '@/lib/types'
 import List from '@/components/List'
 import Pagination from '@/components/Pagination'
-import Skeleton from '@/components/Skeleton'
 import ListSkeleton from '@/components/ListSkeleton'
 
 let timer: NodeJS.Timeout
@@ -19,7 +14,7 @@ export default function Page() {
 	const [debouncedValue, setDebouncedValue] = useState('')
 	const [currentPage, setCurrentPage] = useState(1)
 
-	const { data }: TResData = useGraphRequestByQueryString({
+	const { data, loading }: TRespData = useGraphRequestByQueryString({
     debouncedValue,
     pageNum: currentPage
   })
@@ -55,6 +50,8 @@ export default function Page() {
 					const value = e.target.value
 					setInputValue(value)
 				}}
+        placeholder='Enter character name here...'
+        className='mt-6'
 			/>
 
 			{!data?.characters?.results ? (

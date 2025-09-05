@@ -13,7 +13,7 @@ export function useGraphRequestByQueryString(props: {
 }) {
 	const { debouncedValue, fullNameString, pageNum } = props
   let chosenQuery
-  let variables: {
+  const variables: {
     name?: string
   } = {}
 

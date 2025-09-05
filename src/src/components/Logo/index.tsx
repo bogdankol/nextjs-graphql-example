@@ -9,7 +9,7 @@ function Logo() {
         height={100}
 				alt='logo'
 				title='logo'
-				src='/logo2.png'
+				src='/logo.png'
 			/>
 		</Link>
 	)

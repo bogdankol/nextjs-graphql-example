@@ -7,7 +7,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/chadcn/components/ui/pagination";
-import React from 'react';
+import React from "react";
 
 export default function PaginationComponent({
   setCurrentPage,
@@ -35,16 +35,23 @@ export default function PaginationComponent({
   // Turn into sorted array
   const pages = Array.from(visiblePages).sort((a, b) => a - b);
 
+  // ✅ If there’s only one page, render nothing
+  if (totalPages <= 1) {
+    return null;
+  }
+
   return (
     <Pagination>
       <PaginationContent>
-        {/* Previous */}
-        <PaginationItem>
-          <PaginationPrevious
-            size={0}
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-          />
-        </PaginationItem>
+        {/* Previous (hide on first page) */}
+        {currentPage > 1 && (
+          <PaginationItem>
+            <PaginationPrevious
+              size={0}
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            />
+          </PaginationItem>
+        )}
 
         {pages.map((page, idx) => {
           const prevPage = pages[idx - 1];
@@ -82,15 +89,17 @@ export default function PaginationComponent({
           );
         })}
 
-        {/* Next */}
-        <PaginationItem>
-          <PaginationNext
-            size={0}
-            onClick={() =>
-              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-            }
-          />
-        </PaginationItem>
+        {/* Next (hide on last page) */}
+        {currentPage < totalPages && (
+          <PaginationItem>
+            <PaginationNext
+              size={0}
+              onClick={() =>
+                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+              }
+            />
+          </PaginationItem>
+        )}
       </PaginationContent>
     </Pagination>
   );

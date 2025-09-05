@@ -17,7 +17,18 @@ export type TResData = {
 			info: {
 				pages: number
 			}
+		}
+	}
+}
+
+export type TResultsData = {
+  data: {
+		characters: {
 			results: TItem[]
 		}
 	}
+}
+
+export type TRespData = TResData & TResultsData & {
+  loading: boolean
 }

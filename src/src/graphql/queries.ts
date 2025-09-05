@@ -41,8 +41,8 @@ export const getCharactersByName = `
   }
 `
 export const getCharactersByCharacterName = `
-  query GetCharactersByCharacterName ($fullName: String!) {
-    characters(filter: { name: $fullName }) {
+  query GetCharactersByCharacterName ($name: String!) {
+    characters(filter: { name: $name }) {
       results {
         name
         status
