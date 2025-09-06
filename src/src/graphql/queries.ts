@@ -43,6 +43,9 @@ export const getCharactersByName = `
 export const getCharactersByCharacterName = `
   query GetCharactersByCharacterName ($name: String!) {
     characters(filter: { name: $name }) {
+      info {
+        pages
+      }
       results {
         name
         status

@@ -6,6 +6,7 @@ import type { TRespData } from '@/lib/types'
 import List from '@/components/List'
 import Pagination from '@/components/Pagination'
 import ListSkeleton from '@/components/ListSkeleton'
+import { itemsStore } from '@/stores/itemsStore'
 
 let timer: NodeJS.Timeout
 
@@ -14,21 +15,32 @@ export default function Page() {
 	const [debouncedValue, setDebouncedValue] = useState('')
 	const [currentPage, setCurrentPage] = useState(1)
 
-	const { data, loading }: TRespData = useGraphRequestByQueryString({
-    debouncedValue,
-    pageNum: currentPage
-  })
-	const totalPages = data?.characters?.info?.pages
+  const storedGetBasicItemsList = itemsStore(state => state.getBasicListOfCharacters)
+  const storedGetCharactersByName = itemsStore(state => state.getCharactersByName)
+  const storedItems = itemsStore(state => state.items)
+  const storedTotalPages = itemsStore(state => state.totalPages)
+  const storedIsFetching = itemsStore(state =>state.isFetching)
 
-	useGraphRequestByQueryString({
-    debouncedValue,
-    pageNum: currentPage + 1
-  })
+	// const { data, loading }: TRespData = useGraphRequestByQueryString({
+  //   debouncedValue,
+  //   pageNum: currentPage
+  // })
+	// const totalPages = data?.characters?.info?.pages
 
-	useGraphRequestByQueryString({
-    debouncedValue,
-    pageNum: currentPage - 1
-  })
+  // useGraphRequestByQueryString({
+  //   debouncedValue,
+  //   pageNum: currentPage
+  // })
+
+	// useGraphRequestByQueryString({
+  //   debouncedValue,
+  //   pageNum: currentPage + 1
+  // })
+
+	// useGraphRequestByQueryString({
+  //   debouncedValue,
+  //   pageNum: currentPage - 1
+  // })
 
 	useEffect(() => {
 		if (timer) {
@@ -40,8 +52,21 @@ export default function Page() {
 	}, [inputValue])
 
   useEffect(() => {
+    storedGetBasicItemsList(currentPage)
+  }, [currentPage])
+
+  useEffect(() => {
+    if(debouncedValue) {
+      storedGetCharactersByName( debouncedValue, currentPage)
+    }
+  }, [debouncedValue])
+
+  useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
-  }, [data])
+  }, [
+    // data
+    storedItems
+  ])
 
 	return (
 		<section className={`flex h-full w-full flex-col `}>
@@ -54,18 +79,19 @@ export default function Page() {
         className='mt-6'
 			/>
 
-			{!data?.characters?.results ? (
+			{/* {!data?.characters?.results ? ( */}
+      {storedIsFetching ? (
 				<ListSkeleton />
-			) : !!!data.characters.results.length ? (
+			) : !!!storedItems.length ? (
         <p>No search results. Enter different value</p>
       ) : (
 				<>
-					<List {...{ items: data.characters.results }} />
+					<List {...{ items: storedItems }} />
 
 					<Pagination
 						{...{
 							setCurrentPage,
-							totalPages,
+							totalPages: storedTotalPages,
 							currentPage,
 						}}
 					/>

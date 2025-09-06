@@ -1,26 +1,28 @@
 'use client'
-import { gql, useQuery } from '@apollo/client'
+import { gql } from '@apollo/client'
 import {
 	getBasicListOfCharacters,
 	getCharactersByName,
 	getCharactersByCharacterName,
 } from '@/graphql/queries'
-import { itemsStore } from '@/stores/itemsStore'
 import { TRespData } from '@/lib/types'
+import { client } from './initApolloClient'
 
-export function useGraphRequestByQueryString(props: {
+export async function doGraphRequest(props: {
 	fullNameString?: string
 	debouncedValue?: string
 	pageNum?: number
 }) {
+  if(!client) return 
+
 	const { debouncedValue, fullNameString, pageNum } = props
-	const [setItemsFunc, setIsFetchingFunc, setTotalPagesFunc] = itemsStore(
-		state => [state.setItems, state.setIsFetching, state.setTotalPages],
-	)
 	let chosenQuery
 	const variables: {
 		name?: string
-	} = {}
+    page?: number
+	} = {
+    page: pageNum
+  }
 
 	if (debouncedValue) {
 		chosenQuery = getCharactersByName
@@ -32,29 +34,33 @@ export function useGraphRequestByQueryString(props: {
 		chosenQuery = getBasicListOfCharacters
 	}
 
-	const { loading, error, data }: TRespData = useQuery(gql(chosenQuery), {
-		variables: {
-			page: pageNum,
-			...variables,
-		},
-	})
+	// const { loading, error, data }: TRespData = useQuery(gql(chosenQuery), {
+	// 	variables: {
+	// 		page: pageNum,
+	// 		...variables,
+	// 	},
+	// })
+
+  const result: TRespData = await client.query({
+    query: gql(chosenQuery),
+    variables
+  })
+
+  const { loading, data, error } = result
+
+  if (error) {
+    throw new Error(error.message)
+  }
 
   let items
   let totalPages
-	// // setIsFetchingFunc(loading)
 	if (data?.characters?.results) {
-	// 	setItemsFunc(data?.characters?.results)
     items = data?.characters?.results
 	}
 	if (data?.characters?.info?.pages) {
-  //   setTotalPagesFunc(data.characters.info.pages)
     totalPages = data.characters.info.pages
 	}
 
-	if (error) console.log('ERRORO:', error.message)
-
-	// this return is for first approuch when I didn't use zustand
-	//  but I've left it...just because
 	return {
 		loading,
 		items,

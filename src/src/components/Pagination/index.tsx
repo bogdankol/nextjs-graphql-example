@@ -41,7 +41,7 @@ export default function PaginationComponent({
   }
 
   return (
-    <Pagination>
+    <Pagination className='my-6'>
       <PaginationContent>
         {/* Previous (hide on first page) */}
         {currentPage > 1 && (

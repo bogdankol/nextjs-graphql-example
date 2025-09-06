@@ -11,24 +11,20 @@ export type TItem = {
 	image: string
 }
 
-export type TResData = {
-	data: {
-		characters: {
-			info: {
-				pages: number
-			}
-		}
-	}
+export type TInfo = {
+  pages?: number
 }
 
-export type TResultsData = {
-  data: {
-		characters: {
-			results: TItem[]
-		}
-	}
-}
+export type TCharacters = {
+  info?: TInfo;
+  results?: TItem[];
+};
 
-export type TRespData = TResData & TResultsData & {
-  loading: boolean
-}
+export type TRespData = {
+  loading: boolean;
+  error?: Error;
+  data?: {
+    characters: TCharacters;
+  };
+};
+
