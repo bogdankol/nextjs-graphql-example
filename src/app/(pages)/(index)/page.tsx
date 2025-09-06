@@ -8,6 +8,11 @@ import Pagination from '@/components/Pagination'
 import ListSkeleton from '@/components/ListSkeleton'
 import { itemsStore } from '@/stores/itemsStore'
 
+export const metadata = {
+  title: "Rick and Morty characters",
+  description: "Look for your favorite Rick and Morty character!",
+};
+
 let timer: NodeJS.Timeout
 
 export default function Page() {
