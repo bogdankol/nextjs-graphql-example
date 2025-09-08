@@ -1,5 +1,10 @@
 import Content from './content'
 
+export const metadata = {
+  title: "Rick and Morty characters",
+  description: "Look on specific characters!",
+};
+
 export default async function Page({
 	params,
 }: {
