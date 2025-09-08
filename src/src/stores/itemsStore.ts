@@ -9,6 +9,10 @@ type TItemsStore = {
 	totalPages: number
 	getBasicListOfCharacters: (pageNum: number) => void
 	getCharactersByName: (name: string, pageNum: number) => void
+
+  setItems: (arr: TItem[]) => void
+  setIsFetching: (value: boolean) => void
+  setTotalPages: (num: number) => void
 }
 
 export const itemsStore = create<TItemsStore>(set => ({
@@ -16,7 +20,7 @@ export const itemsStore = create<TItemsStore>(set => ({
 	isFetching: false,
 	totalPages: 0,
 	getBasicListOfCharacters: async (pageNum: number) => {
-		set(_ => ({ isFetching: true, items: [] }))
+		set(_ => ({ isFetching: true }))
 
 		const res = await doGraphRequest({ pageNum })
 
@@ -31,7 +35,7 @@ export const itemsStore = create<TItemsStore>(set => ({
     }
 	},
 	getCharactersByName: async (name: string, pageNum: number) => {
-		set(_ => ({ isFetching: true, items: [] }))
+		set(_ => ({ isFetching: true }))
 
 		const res = await doGraphRequest({ pageNum, debouncedValue: name })
 
@@ -45,4 +49,8 @@ export const itemsStore = create<TItemsStore>(set => ({
       set(_ => ({ isFetching: false }))
     }
 	},
+
+  setItems: (arr: TItem[]) => set({ items: arr }),
+  setIsFetching: (value: boolean) => set({ isFetching: value }),
+  setTotalPages: (num: number) => set({ totalPages: num })
 }))

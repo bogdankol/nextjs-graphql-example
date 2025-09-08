@@ -26,8 +26,6 @@ function Content({ transformedCharName }: { transformedCharName: string }) {
     storedGetCharactersByName(transformedCharName, currentPage)
   }, [transformedCharName, currentPage])
 
-  console.log({ storedIsFetching, storedItems, storedTotalPages})
-
   if(storedIsFetching) return <p>Loading...</p>
 
   return (

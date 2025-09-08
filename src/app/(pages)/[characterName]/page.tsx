@@ -1,9 +1,9 @@
 import Content from './content'
-
+import { formPaths } from './formPaths'
 export const metadata = {
   title: "Rick and Morty characters",
   description: "Look on specific characters!",
-};
+}
 
 export default async function Page({
 	params,
